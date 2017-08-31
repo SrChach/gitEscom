@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Autómata Finito Determinístico</title>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<h1>Autómata Finito Determinístico</h1>
+		<h3>pulsa el botón, no te resistas :v</h3>
+		<br/>
+		<button onclick="afd()">Run</button>
+		<script>
+			function afd(){
+				var dato=prompt("Escribe el alfabeto, separado con comas", "");
+				var simbolo = dato.split(",");
+				var isUnique = new Array(simbolo.length).fill(1);//1 si es unico, 0 si es + de 1
+				var finChar=0;
+				for(var i= 0; i<simbolo.length; i++){
+					if(simbolo[i].length > 1){	
+						isUnique[i]= 0;
+					}else{
+						finChar++;
+					}
+				}
+				var totSimbolos= simbolo.length;
+				var r1 = new Array(totSimbolos);	var cr1= 0;
+
+				for(var i=0; i<totSimbolos; i++){
+					if(isUnique[i] == 1){
+						r1[cr1]= simbolo[i].charCodeAt(0);
+						cr1++;
+					}
+				}				
+				for(var i=0; i<totSimbolos; i++){
+					if(isUnique[i] == 0){
+						r1[cr1]= new Array(2);
+						r1[cr1][0]= simbolo[i].charCodeAt(0);
+						r1[cr1][1]= simbolo[i].charCodeAt(simbolo[i].length - 1);
+						cr1++;
+					}
+				}
+
+				/*	
+					r1: Alfabeto[char hasta finChar, lo demás es rangos]
+					finChar: donde acaban los caracteres y empiezan los rangos
+					totSimbolos: total de simbolos
+				*/
+
+				var dato=prompt("Cuantos estados tendrá el autómata?", "");
+				var totEstados= parseInt(dato);
+				var dato=prompt("escriba los estados finales, separados con comas","");
+				var ef=dato.split(",");
+				var esEstadoFinal= new Array(totEstados).fill(false);
+				for(var i=0;i<ef.length;i++){
+					var gg= parseInt(ef[i]);
+					esEstadoFinal[gg]=true;
+				}
+
+				/*
+					totEstados: total de estados que habrá
+					esEstadoFinal: true si es estado final, false si no; Su longitud es totEstados
+				*/
+
+				var tabla= new Array(totEstados);
+				for(var i=0;i<totEstados;i++){
+					tabla[i]= new Array(totSimbolos).fill(-1);
+				}
+				for(var i=0;i<totEstados;i++){
+					for(var j=0; j<totSimbolos; j++){
+						if(j<finChar){
+							var dato=prompt("si estado= q"+i+" y llega el simbolo "+String.fromCharCode(r1[j])+" a qué estado pasará el autómata?");
+							var ff= parseInt(dato);
+							tabla[i][j]=ff;
+						}else{
+							var dato=prompt("si estado= q"+i+" y llega el rango ["+String.fromCharCode(r1[j][0])+"->"+String.fromCharCode(r1[j][1])+"] a qué estado pasará el autómata?");
+							var ff= parseInt(dato);
+							tabla[i][j]=ff;
+						}
+					}
+				}
+				
+				/*
+					tabla:	 es la tabla de transiciones; [totEstados][totSimbolos]
+				*/
+
+				while(1){
+					var cadena= prompt("introduzca expresión a evaluar; teclee [fin] para terminar","");
+					if(cadena.localeCompare("fin")==0){	break;	}
+
+					var posCadena=0;
+					var estadoActual=0;
+					while(posCadena<cadena.length){
+						var evaluando= cadena.charCodeAt(posCadena);
+						for(var j=0; j<totSimbolos; j++){
+							if(j<finChar){
+								if(r1[j] == evaluando){
+									break;
+								}
+							}else{
+								if( (r1[j][0]<= evaluando) && ( evaluando<= r1[j][1] ) ){
+									break;
+								}
+							}
+						}
+						if(j>=totSimbolos){
+							alert("no hay una transición hacia el símbolo "+String.fromCharCode(evaluando)+"; cadena inválida");
+							break;
+						}
+						estadoActual=tabla[estadoActual][j];
+
+						posCadena++;
+					}
+
+					if( esEstadoFinal[estadoActual]== true){
+						alert("la cadena "+cadena+" es válida");
+					}else{
+						alert("la cadena "+cadena+" es inválida");
+					}
+
+				}
+
+				/*
+					
+				*/
+			}
+		</script>
+	</body>
+</html>
