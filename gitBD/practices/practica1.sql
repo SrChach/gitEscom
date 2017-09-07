@@ -1,5 +1,6 @@
 create database escuela;
 use escuela;
+
 create table profesor(
 	nombre varchar(50),
 	fechaNacimiento date,
@@ -12,10 +13,11 @@ create table salon(
 	ubicacion varchar(50)
 );
 
---segunda base de datos
+/*segunda base de datos*/
 
 create database taller;
 use taller;
+
 create table mecanico(
 	nombre varchar(50),
 	fechaIngreso date
@@ -24,6 +26,12 @@ create table mecanico(
 create table refacciones(
 	nombrePieza varchar(50),
 	fechaLlegada date,
-	int garantia
+	garantia int
+);
+
+create table auto(
+	marca varchar(50),
+	modelo varchar(50),
+	sintomas varchar(50)
 );
 
