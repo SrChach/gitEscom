@@ -1,6 +1,3 @@
-create database experimental;
-use experimental;
-
 create table cliente(
 	idCliente int unsigned not null primary key auto_increment,
 	nombre varchar(25),
@@ -24,44 +21,6 @@ create table cliente(
 	fechaAlta date
 );
 
-create table producto(
-	idProducto int unsigned not null primary key auto_increment,
-	nomProducto varchar(25),
-	existencia int,
-	precCompra float,
-	precMinVenta float,
-	precSugerido float,
-	idProv int unsigned not null, /*foranea*/
-	marca varchar(25),
-	codigoBarra int,
-	modelo varchar(25)
-);
-
-create table proveedor(
-	idProv int unsigned not null primary key auto_increment,
-	nomProv varchar(25),
-	domicilioProv varchar(100),
-	compañia varchar(50),
-	rfcProv varchar(30),
-	correoProv varchar(50),
-	telProv varchar(25)
-);
-
-create table venta(
-	idVenta int unsigned not null primary key auto_increment,
-	fechaVta date,
-	idCliente int unsigned not null, /*foranea*/
-	totalVenta float
-);
-
-create table prodVendidos(
-	idProdVend int unsigned not null primary key auto_increment,
-	idVenta int unsigned not null, /*foranea*/
-	idProducto int not null, /*foranea*/
-	cantidad int,
-	precioVenta float
-);
-
 insert into cliente (nombre, apPat, apMat, rfc, sexo, telefono, credito, deuda, fechaNac, correo, fechaAlta, pais, estado, delegacion, colonia, calle, numExt, numInt, CodPostal)	values 
 	('Ana', 'Martinez', 'Villarreal', 'rfc', 'F', '1728394650', 1200.00, 500.00, '2005/05/09', '1@hotmail.com', '2000/01/01', 'Mexico', 'DF', 'Coyoacan', 'roma', 'calle', 13, 1, '42700'),
 	('Annette', 'Juarez', 'Gomez', 'rfc', 'F', '1928406342', 900.00, 150.00, '2003/10/10', '2@hotmail.com', '2000/01/01', 'Mexico', 'DF', 'iztacalco', 'jupiter', 'calle', 04, 2, '42700'),
@@ -75,49 +34,31 @@ insert into cliente (nombre, apPat, apMat, rfc, sexo, telefono, credito, deuda, 
 	('Flor', 'Alamilla', 'de la O', 'rfc', 'F', '1122334455', 900.00, 10.00, '1997/07/07', '10@hotmail.com', '2000/01/01','Mexico', 'DF', 'atzcapozalco', 'pluton', 'calle', 66, 2, '42700');
 
 /*Consulta1*/
-select nombre, left(nombre, 3) as "3 primeras letras" from cliente;
-
 /*Consulta2*/
-select nombre, right(nombre, 3) as "3 ultimas letras" from cliente;
-
 /*Consulta3*/
-select nombre, substring(nombre, 2, 4) as "del 2do al 5to char" from cliente;
+select nombre, date_format(current_date, "%Y") - date_format(fechaAlta, "%Y") as antiguedad from cliente;
 
 /*Consulta4*/
-select nombre as "nombre original", replace(nombre, "d", "s") as "cambiando las d por s" from cliente;
-
 /*Consulta5*/
-select apPat, char_length(apPat) as "longitud del apellido" from cliente;
-
 /*Consulta6*/
-select rtrim(nombre) as "quita espacios en blanco al final del nombre" from cliente;
+select nombre, date_add(current_date, interval 1 month) as "mes+1" from cliente;
 
 /*Consulta7*/
-select nombre as "con espacio al final" from cliente where right(nombre, 1) = " ";
-
 /*Consulta8*/
-select nombre, upper(nombre) as "nombre en mayusculas" from cliente;
-
 /*Consulta9*/
-select apPat, lower(apPat) as "apellido paterno en minusculas" from cliente
+select concat(nombre, " ", apPat, " se dio de alta el ", date_format(fechaAlta, "%W %d %m %Y")) from cliente where nombre="Edgar";
 
 /*Consulta10*/
-select upper(apPat) as "apellido paterno", upper(apMat) as "apellido materno", upper(nombre) as "nombre" from cliente;
-
 /*Consulta11*/
-select nombre, concat(substring(nombre, 1, char_length(nombre)-1), upper(substring(nombre, char_length(nombre), char_length(nombre)))) as "ultima letra del nombre con mayusculas" from cliente;
-
 /*Consulta12*/
-select concat(upper(left(nombre, 1)), right(nombre, char_length(nombre)-1) ) as "primer letra del nombre en mayuscula" from cliente;
+select concat(nombre, " ", apPat) as "Clientes que se han registrado en enero" from cliente where date_format(fechaAlta, "%m")=12;
 
 /*Consulta13*/
-select concat(substring(nombre, 1, 2), upper(substring(nombre, 3, 1)), substring(nombre, 4, char_length(nombre)-3)) as "tercer caracter en mayus" from cliente
-
 /*Consulta14*/
-select concat(left(nombre, 1), upper(substring(nombre, 2, 1)), substring(nombre, 3, 1), upper(substring(nombre, 4, 1)), substring(nombre, 5, char_length(nombre)-4)) as "segundo y cuarto chars en mayus" from cliente;
-
 /*Consulta15*/
-select nombre from cliente where char_length(nombre) >5;
+select concat(nombre, " ", apPat) as "Hoy cumple años" from cliente where date_format(fechaNac, "%d %m")=date_format(now(), "%d %m");
 
 /*Consulta16*/
-select replace(nombre, "Benito", "B.") as "delegacion", nombre from cliente where delegacion="Benito Juarez";
+/*Consulta17*/
+/*Consulta18*/
+select concat("Estimado cliente ", nombre, " ", apPat, " le recordamos que el dia de hoy ", date_format(now, "%d %m %Y "), "usted nos debe ", deuda, ". Le ofrecemos la posibilidad de pagar a "
