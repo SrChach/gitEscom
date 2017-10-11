@@ -34,31 +34,57 @@ insert into cliente (nombre, apPat, apMat, rfc, sexo, telefono, credito, deuda, 
 	('Flor', 'Alamilla', 'de la O', 'rfc', 'F', '1122334455', 900.00, 10.00, '1997/07/07', '10@hotmail.com', '2000/01/01','Mexico', 'DF', 'atzcapozalco', 'pluton', 'calle', 66, 2, '42700');
 
 /*Consulta1*/
+select date_format(now(), "%d de %M del %Y") as "fecha actual";
+
 /*Consulta2*/
+select date_format(date_add(current_date, interval 1 week), "%d de %M del %Y") as "fecha mas una semana";
+
 /*Consulta3*/
-select nombre, date_format(current_date, "%Y") - date_format(fechaAlta, "%Y") as antiguedad from cliente;
+select nombre, concat(date_format(current_date, "%Y") - date_format(fechaAlta, "%Y"), " años") as antiguedad from cliente;
 
 /*Consulta4*/
+select date_format(now(), "%d") as "numero del dia actual", date_format(now(), "%W") as "nombre del dia actual"; 
+
 /*Consulta5*/
+select nombre, year(fechaAlta) as "año Alta", monthname(fechaAlta) as "mes Alta", dayofmonth(fechaAlta) as "dia Alta", date_format(fechaAlta, "%H") as "hora alta", date_format(fechaAlta, "%i") as "minuto alta" from cliente; 
+
 /*Consulta6*/
-select nombre, date_add(current_date, interval 1 month) as "mes+1" from cliente;
+select concat("si se comprara hoy algo a credito:") as "descripcion", date_add(current_date, interval 1 month) as "primer pago", date_add(current_date, interval 2 month) as "segundo pago", date_add(current_date, interval 3 month) as "tercer pago";
 
 /*Consulta7*/
+select nombre, concat(date_format(current_date, "%Y") - date_format(fechaAlta, "%Y"), " años, ", date_format(current_date, "%m") - date_format(fechaAlta, "%m"), " meses, ", date_format(current_date, "%d") - date_format(fechaAlta, "%d"), " dias") as antiguedad from cliente;
+ 
 /*Consulta8*/
+select concat("El dia de hoy ", current_date, " es ", date_format(current_date, "%W"));
+
 /*Consulta9*/
 select concat(nombre, " ", apPat, " se dio de alta el ", date_format(fechaAlta, "%W %d %m %Y")) from cliente where nombre="Edgar";
 
 /*Consulta10*/
+select nombre, fechaAlta from cliente;
+
 /*Consulta11*/
+select nombre, fechaAlta from cliente where year(fechaAlta)=2010;
+
 /*Consulta12*/
 select concat(nombre, " ", apPat) as "Clientes que se han registrado en enero" from cliente where date_format(fechaAlta, "%m")=12;
 
 /*Consulta13*/
+select nombre, fechaAlta from cliente where (year(fechaAlta)=2010) and (month(fechaAlta)=2);
+
 /*Consulta14*/
+select nombre, fechaAlta from cliente where fechaAlta="2010-08-15";
+
 /*Consulta15*/
 select concat(nombre, " ", apPat) as "Hoy cumple años" from cliente where date_format(fechaNac, "%d %m")=date_format(now(), "%d %m");
 
 /*Consulta16*/
+select nombre, apPat, fechaNac from cliente where (year(current_date)-year(fechaNac))<18;
+
 /*Consulta17*/
+select nombre, fechaAlta from cliente where (month(current_date)-month(fechaAlta))<6 and (year(current_date)-year(fechaAlta))=0;
+
 /*Consulta18*/
-select concat("Estimado cliente ", nombre, " ", apPat, " le recordamos que el dia de hoy ", date_format(now, "%d %m %Y "), "usted nos debe ", deuda, ". Le ofrecemos la posibilidad de pagar a "
+select concat("Estimado cliente ", nombre, " ", apPat, " le recordamos que el dia de hoy ", date_format(now(), "%d %m %Y "),
+		"usted nos debe ", deuda, " pesos. Le ofrecemos la posibilidad de pagar a 6 meses con el 10% de interés, por lo que esperamos su primer pago de ", 
+		round((deuda/6)*1.1, 2), " pesos a mas tardar el dia ", date_format(date_add(current_date, interval 1 month), "%d de %M del %Y"), ". Por su atencion Gracias.") from cliente where deuda>5000;
