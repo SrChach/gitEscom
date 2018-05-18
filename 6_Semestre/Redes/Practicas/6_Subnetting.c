@@ -17,31 +17,15 @@ int * lecturaYConversion(int e){
 	return temp;
 }
 
-int * sumando(int *num, int sum){
+void anadir(int **tot, int *num, int pos){
 	int i;
-	for(i=0; i<8; i++){
-		if(sum == 0)
-			break;
-		if(num[i] == 0){
-			num[i] = 1;
-			sum--;
-		}
+	for(i=0; i<8 ;i++){
+		(*tot)[i+pos] = num[i];
 	}
 }
 
-int aDecimal(int * num){
-	int i, cont = 0;
-	for(i=0; i<8; i++){
-		if(num[i] == 1)
-			cont += (int)pow(2, 8-(i+1));
-	}
-	return cont;
-}
-
-int main(){
-	int a[4], e[4], i, j = 0, flag = 0, resp = 0, cantSubredes, *num1, *num2, *num3, *num4, *m1, *m2, *m3, *m4;
-	
-	printf("introduce la direccion de host\n");
+int * totalBits(){
+	int i, a[4], *num1, *num2, *num3, *num4, *host;
 	scanf("%d.%d.%d.%d", &a[0], &a[1], &a[2], &a[3]);
 	
 	num1 = lecturaYConversion(a[0]);
@@ -50,126 +34,114 @@ int main(){
 	num4 = lecturaYConversion(a[3]);
 	
 	if(num1 == NULL || num2 == NULL || num3 == NULL || num4 == NULL){
-		printf("Uno o más de los datos están fuera del rango 0->255");
-		return 1;
+		printf("Uno o más de los datos están fuera del rango 0->255. Reintroduce");
+		return NULL;
 	}
 
-	printf("\nIntroduce la mascara de subred original\n");
-	scanf("%d.%d.%d.%d", &e[0], &e[1], &e[2], &e[3]);
+	printf("\n");
+	host = (int*)malloc(sizeof(int)*32);
 
-	m1 = lecturaYConversion(e[0]);
-	m2 = lecturaYConversion(e[1]);
-	m3 = lecturaYConversion(e[2]);
-	m4 = lecturaYConversion(e[3]);
+	anadir(&host, num1, 0);
+	anadir(&host, num2, 8);
+	anadir(&host, num3, 16);
+	anadir(&host, num4, 24);
+	return host;
+}
 
-	if(m1 == NULL || m2 == NULL || m3 == NULL || m4 == NULL){
-		printf("Uno o más de los datos están fuera del rango 0->255");
-		return 1;
+int * copiar(int * num){
+	int i, *newNet;
+	newNet = (int*)malloc(sizeof(int)*32); 
+	for(i=0;i<32;i++)
+		newNet[i] = num[i];
+	return newNet;
+}
+
+int * generaNueva(int *mask, int i, int f){
+	int cont, *newMask;
+	newMask = copiar(mask);
+	for(cont = 0; cont<f; cont++)
+		(newMask)[cont+i] = 1;
+	return newMask;
+}
+
+void sumaUno(int **num, int ini, int lim){
+	int i;
+	for(i=ini+lim-1; i>=ini; i--){
+		if((*num)[i]==0){
+			(*num)[i]=1;
+			break;
+		} else {
+			(*num)[i]=0;
+		}
 	}
+	//
+	printf("\n");
+}
+
+void aN(int **num, int ini, int conv){
+	int i;
+	for(i=ini;i<32;i++){
+		(*num)[i]=conv;
+	}
+}
+
+int aDecimal(int * num, int pos){
+	int i, cont = 0;
+	for(i=pos; i<8+pos; i++){
+		if(num[i] == 1)
+			cont += (int)pow(2, 7-i+pos);
+	}
+	return cont;
+}
+
+int main(){
+	int i, f, k, l, cantSubredes, *host = NULL, *mask = NULL, *newMask = NULL, *outNet = NULL;
+	printf("introduce la direccion de host\n");
+	while(host==NULL)
+		host = totalBits();
+
+	printf("introduce la mascara de subred original\n");
+	while(mask==NULL)
+		mask = totalBits();
 
 	printf("\nIntroduce la cantidad de subredes que deseas\n");
 	scanf("%d", &cantSubredes);
+	for(i=0;i<32;i++)
+		if(mask[i] == 0)
+			break;
 
-	for(i=0; i<8; i++)
-		if(m1[i] == 1){
-			j++;
-		} else {
-			flag = 1;
-			break;
-		}
-	for(i=0; i<8; i++)
-		if(m2[i] == 1 && flag == 0){
-			j++;
-		} else {
-			flag = 1;
-			break;
-		}
-	for(i=0; i<8; i++)
-		if(m3[i] == 1 && flag == 0){
-			j++;
-		} else {
-			flag = 1;
-			break;
-		}
-	for(i=0; i<8; i++)
-		if(m4[i] == 1 && flag == 0){
-			j++;
-		} else {
-			break;
-		}
-	
-	if(cantSubredes > pow(2, 32-j)){
+	printf("\n%d\n", i);
+
+	if(cantSubredes > pow(2, 31-i)){
 		printf("no se pueden hacer tantas subredes");
-		return 2;
-	} else if(cantSubredes == (int)pow(2, 32-j)){
+		return 1;
+	} else if(cantSubredes == (int)pow(2, 31-i)){
 		printf("se pueden realizar las subredes, pero no hay espacio para direcciones de host");
-		return 2;
+		return 1;
 	}
 
-	flag = 0;
-	for(i=0; i<(32-j); i++){
-		if((int)pow(2, i+1) >= cantSubredes){
-			flag = i+1;
+	for(f=0; f<(32-i); f++)
+		if((int)pow(2, f+1) >= cantSubredes){
+			f = f+1;
 			break;
 		}
-	}
 
-	printf("\nse tomarán prestados %d bits", flag);
+	printf("Se tomarán prestados %d bits\n", f);
 	
-	printf("\nbits de la mascara original %d", j);
-	resp = flag;
-	if(j<=8){
-		if(flag<=8){
-			m2 = sumando(m2, flag);
-		} else if(flag <= 16){
-			m2 = sumando(m2, 8);
-			m3 = sumando(m3, flag - 8);
-		} else {
-			m2 = sumando(m2, 8);
-			m3 = sumando(m3, 8);
-			m4 = sumando(m4, flag - 16);
-		}
-	} else if(j<=16){
-		if(flag <= 8){
-			m3 = sumando(m3, flag);
-		} else if(flag <= 16) {
-			m3 = sumando(m3, 8);
-			m4 = sumando(m4, flag - 8);
-		}
-	} else if(j<=24){
-		m4 = sumando(m4, flag);
-	}
+	newMask = generaNueva(mask, i, f);
+	printf("Mascara de subred original: %d.%d.%d.%d\n", aDecimal(mask, 0), aDecimal(mask, 8), aDecimal(mask, 16), aDecimal(mask, 24));
+	printf("Nueva mascara de subred: %d.%d.%d.%d\n", aDecimal(newMask, 0), aDecimal(newMask, 8), aDecimal(newMask, 16), aDecimal(newMask, 24));
 
-	printf("mascara de subred nueva: \n\t%d.%d.%d.%d\n", aDecimal(m1), aDecimal(m2), aDecimal(m3), aDecimal(m4));
-	for(i=1; i<= cantSubredes; i++){
-		printf("subred %d:\n", i);
-		flag = resp;
-		if(j<=8){
-			printf("direccion de Red: %d.%d.%d.%d\n", a[0], aDecimal(m2), aDecimal(m3), aDecimal(m4));
-			if(flag<=8){
-				m2 = sumando(m2, flag);
-			} else if(flag <= 16){
-				m2 = sumando(m2, 8);
-				m3 = sumando(m3, flag - 8);
-			} else {
-				m2 = sumando(m2, 8);
-				m3 = sumando(m3, 8);
-				m4 = sumando(m4, flag - 16);
-			}
-		} else if(j<=16){
-			printf("direccion de Red: %d.%d.%d.%d\n", a[0], a[1], aDecimal(m3), aDecimal(m4));
-			if(flag <= 8){
-				m3 = sumando(m3, flag);
-			} else if(flag <= 16) {
-				m3 = sumando(m3, 8);
-				m4 = sumando(m4, flag - 8);
-			}
-		} else if(j<=24){
-			printf("direccion de Red: %d.%d.%d.%d\n", a[0], a[1], a[2], aDecimal(m4));
-			m4 = sumando(m4, flag);
-		}
+	printf("\n");
+
+	outNet = copiar(host);
+	for(k=0;k<cantSubredes;k++){
+	 	aN(&outNet, i+f, 0);
+		printf("Direccion de red %d: %d.%d.%d.%d\n", k, aDecimal(outNet, 0), aDecimal(outNet, 8), aDecimal(outNet, 16), aDecimal(outNet, 24));
+	 	aN(&outNet, i+f, 1);
+		printf("Direccion de Broadcast %d: %d.%d.%d.%d\n", k, aDecimal(outNet, 0), aDecimal(outNet, 8), aDecimal(outNet, 16), aDecimal(outNet, 24));
+		sumaUno(&outNet, i, f);
 		printf("\n");
 	}
-
-	return 0;
+	exit(0);
 }
