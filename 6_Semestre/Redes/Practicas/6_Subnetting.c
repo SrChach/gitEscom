@@ -126,7 +126,7 @@ int main(){
 			break;
 		}
 
-	printf("Se tomarán prestados %d bits\n", f);
+	printf("Se tomaran prestados %d bits\n", f);
 	
 	newMask = generaNueva(mask, i, f);
 	printf("Mascara de subred original: %d.%d.%d.%d\n", aDecimal(mask, 0), aDecimal(mask, 8), aDecimal(mask, 16), aDecimal(mask, 24));
