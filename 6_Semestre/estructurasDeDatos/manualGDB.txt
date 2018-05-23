@@ -1,0 +1,32 @@
+para poder usar GDB se compila con:
+	//gcc -g3 "archivo.c"
+	o
+	//gcc -g3 "archivo.c" -o "nombreNuevoEjecutable"
+
+Para debuggear se usa: gdb "nombreArchivoEjecutable"
+
+	"break n" o "b n" sirve para poner un breakpoint en la linea "n"
+	"r" sirve para iniciar/re-iniciar el programa
+	"next" o "n" manda al programa al siguiente breakpoint puesto, o al final del programa
+
+	"step" avanza una orden de ejecución/línea de comando
+	"l" imprime las lineas cercanas a la línea que estamos estudiando
+	"p var" imprime el valor actual de la variable "var"
+		nota: se pueden aplicar "&","*" y "->" a "var" con esta sentencia
+
+	"info locals" muestra los valores de las variables locales(funcion actual)
+
+	"whatis variable" muestra de que tipo es la variable "variable"
+	"set var variable = valor" asigna el valor "valor" a la variable "variable"
+		nota: también  a esto se pueden aplicar "*" y "&"
+
+	"fg" muestra el estado de terminación del programa(creo)
+	"bt" muestra el backtrace, indicando las funciones invocadas y en que lugares fueron llamadas
+
+
+	/*breakpoint condicional
+	"b if condicion" hace breakpoints donde se cumpla la condicion "condicion" impuesta (ejemplo, "condicion" = "x==1")
+	*/	
+	
+	"q" para salir de gdb	
+

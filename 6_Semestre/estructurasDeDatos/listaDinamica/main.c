@@ -32,8 +32,10 @@ int insertar(struct nodo **lista, int dato){
 	nuevo = crearNodo(dato);
 	if(nuevo == NULL)
 		return -1;
-	if(lista == NULL)
-		return -2;
+	if(*lista == NULL){
+		*lista = nuevo;
+		return 0;
+	}
 	ultimo = buscarUltimo((*lista));
 	ultimo->siguiente = nuevo;
 	return 0;	
@@ -52,12 +54,12 @@ int mostrar(struct nodo * lista){
 }
 
 int main(void){
-	struct nodo * lista = crearNodo(0);
+	struct nodo * lista = NULL;
 	int i;
-	for(i=1;i<100;i++){
+	for(i=0;i<100;i++){
 		insertar(&lista, i);
 	}
-	mostrar(lista);	
+	mostrar(lista);
 
 	return 0;
 }
