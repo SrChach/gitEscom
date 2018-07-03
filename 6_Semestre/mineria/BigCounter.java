@@ -21,7 +21,7 @@ public class BigCounter {
             if( line.length() == 0 ) return;
 
             StringTokenizer tokenizer = new StringTokenizer(line, ",");
-System.out.println("#### "+line);
+            System.out.println("#### "+line);
 
             String sx = tokenizer.nextToken();
             String sy = tokenizer.nextToken();
